@@ -1,33 +1,42 @@
---// AUTO BASH REJOIN LOOP (AUTO EXEC FIXED)
+--// AUTO BASH LOOP (FULL AUTO REJOIN)
 
-getgenv().AutoBash = false
-getgenv().SelectedPlayer = nil
-getgenv().Amount = "1"
+if game.CoreGui:FindFirstChild("AutoBashUI") then
+    game.CoreGui.AutoBashUI:Destroy()
+end
+
+getgenv().AutoBash = getgenv().AutoBash or false
+getgenv().SelectedPlayer = getgenv().SelectedPlayer or nil
+getgenv().Amount = getgenv().Amount or "1"
+
+local SCRIPT_URL = "https://raw.githubusercontent.com/Who1amG/DaStreets/refs/heads/main/DaStreetsInfMoney.lua"
 
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- executor queue
 local queue =
     queue_on_teleport or
     syn.queue_on_teleport or
     fluxus.queue_on_teleport
 
 -- UI
-local gui = Instance.new("ScreenGui", game.CoreGui)
+local gui = Instance.new("ScreenGui")
 gui.Name = "AutoBashUI"
+gui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0,250,0,210)
 frame.Position = UDim2.new(0.5,-125,0.5,-105)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.BorderSizePixel = 0
 
 local dropdown = Instance.new("TextButton", frame)
 dropdown.Size = UDim2.new(0,220,0,30)
 dropdown.Position = UDim2.new(0,15,0,15)
 dropdown.Text = "Select Player"
+dropdown.BackgroundColor3 = Color3.fromRGB(35,35,35)
+dropdown.TextColor3 = Color3.new(1,1,1)
 
 local drop = Instance.new("Frame", frame)
 drop.Size = UDim2.new(0,220,0,100)
@@ -40,6 +49,8 @@ amount.Size = UDim2.new(0,220,0,30)
 amount.Position = UDim2.new(0,15,0,155)
 amount.PlaceholderText = "Amount"
 amount.Text = "1"
+amount.BackgroundColor3 = Color3.fromRGB(35,35,35)
+amount.TextColor3 = Color3.new(1,1,1)
 
 amount.FocusLost:Connect(function()
     getgenv().Amount = amount.Text
@@ -49,6 +60,8 @@ local toggle = Instance.new("TextButton", frame)
 toggle.Size = UDim2.new(0,80,0,30)
 toggle.Position = UDim2.new(1,-95,1,-35)
 toggle.Text = "ON"
+toggle.BackgroundColor3 = Color3.fromRGB(0,170,0)
+toggle.TextColor3 = Color3.new(1,1,1)
 
 -- populate players
 local function refresh()
@@ -64,6 +77,8 @@ local function refresh()
         b.Size = UDim2.new(1,0,0,25)
         b.Position = UDim2.new(0,0,0,y)
         b.Text = plr.Name
+        b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+        b.TextColor3 = Color3.new(1,1,1)
 
         b.MouseButton1Click:Connect(function()
             getgenv().SelectedPlayer = plr.Name
@@ -83,8 +98,8 @@ dropdown.MouseButton1Click:Connect(function()
     drop.Visible = not drop.Visible
 end)
 
--- MAIN LOOP
-local function start()
+-- LOOP
+local function startLoop()
     task.spawn(function()
         while getgenv().AutoBash do
 
@@ -106,7 +121,7 @@ local function start()
 
             -- queue reopen
             if queue then
-                queue(game:HttpGet("https://raw.githubusercontent.com/Who1amG/DaStreets/refs/heads/main/DaStreetsInfMoney.lua"))
+                queue('loadstring(game:HttpGet("'..SCRIPT_URL..'"))()')
             end
 
             -- rejoin
@@ -125,6 +140,11 @@ toggle.MouseButton1Click:Connect(function()
     getgenv().AutoBash = not getgenv().AutoBash
 
     if getgenv().AutoBash then
-        start()
+        toggle.Text = "ON"
+        toggle.BackgroundColor3 = Color3.fromRGB(0,170,0)
+        startLoop()
+    else
+        toggle.Text = "OFF"
+        toggle.BackgroundColor3 = Color3.fromRGB(170,0,0)
     end
 end)
