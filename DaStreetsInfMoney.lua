@@ -106,7 +106,7 @@ local function start()
 
             -- queue reopen
             if queue then
-                queue(game:HttpGet("https://pastebin.com/raw/REPLACE_WITH_SCRIPT"))
+                queue(game:HttpGet("https://raw.githubusercontent.com/Who1amG/DaStreets/refs/heads/main/DaStreetsInfMoney.lua"))
             end
 
             -- rejoin
